@@ -1,3 +1,3 @@
-# version of module 
-
-__version__ ='0.0.1'
+from NER_tool.api import get_ner_tag
+from NER_tool.api import get_pos
+from NER_tool.api import test_api
