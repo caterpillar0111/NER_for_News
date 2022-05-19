@@ -20,7 +20,8 @@ def get_ner_tag(text,tag):
   ws_results,pos_results,ner_results=get_ner_result(text,ws,pos,ner)
   for tuple_result in list(ner_results[0]):
     if tuple_result[2]==tag:
-      tag_list.append(tuple_result[-1])
+      if tuple_result[-1] not in tag_list:
+        tag_list.append(tuple_result[-1])
   return tag_list
 
 def get_pos(text,pos_tag):
@@ -39,15 +40,15 @@ def get_location_city_by_geocode_api(place,api_key,city_dict):
   data=reponse.json()
   #data會是一個json格式，可以參考下面這篇查看格式
   #https://icelandcheng.medium.com/%E4%BD%BF%E7%94%A8google-map-api-geocoding-api-%E5%BE%97%E5%88%B0%E9%BB%9E%E4%BD%8D%E7%B8%A3%E5%B8%82%E9%84%89%E9%8E%AE%E8%B3%87%E6%96%99-25bf5f0e4a21
-  if len(data['results'])==0: return "Not Found BY API"
+  if len(data['results'])==0:
+    return "Not Found BY API"
   location_information=data['results'][0]['formatted_address']
   #只需要部分地址相關資料，此處的location_information會是正式的地址格式
   for location in city_dict:
     if location in location_information:
       #如果發現地址裡有縣市資訊
       return location
-    else:
-      return "Not Found BY API"
+
 
 def get_city_in_news(news,city_dict):
   #function功能，input一個新聞文本，找尋文本中出現的縣市資訊，如果同一個縣市出現超過三次，就回傳，否則回傳出現最多次的
@@ -77,8 +78,8 @@ def get_major_city_for_news(text,city_dict,api_key):
         #sort從最長的開始打
       for place in location_list:
         place_result=get_location_city_by_geocode_api(place,api_key,city_dict)
-        if  place_result!='Not Found BY API':
+        if place_result!='Not Found BY API':
           return  place_result
     else:
-      return "Not Found Location Information"
+      return "Not Found Location Information in content"
       #另外可以存一份表把打過的存起來
